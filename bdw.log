@@ -1,0 +1,20 @@
+ - Reading Parameters from file: params-bdw.conf
+Test Parameters:
+Server    = ib_write_bw  -s 65536 --report_gbits
+Client    = ib_write_bw  -s 65536 --report_gbits
+ - Reading Devices from file: hosts-ib
+About to run the following commands:
+Server : ib_write_bw  -s 65536 --report_gbits
+Client : ib_write_bw  -s 65536 --report_gbits <Server>
+
+
+On the following nodes:
+1. t21node095
+2. t21node094
+3. t21node092
+4. t21node020
+
+t21node095 - t21node094:  65536      5000             96.74              96.74                     0.184511
+t21node092 - t21node020:  65536      5000             96.26              96.07                     0.183237
+t21node094 - t21node095:  65536      5000             96.75              96.74                     0.184524
+t21node020 - t21node092:  65536      5000             96.73              96.71                     0.184463

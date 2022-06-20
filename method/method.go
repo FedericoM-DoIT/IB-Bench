@@ -2,6 +2,7 @@ package method
 
 import (
     "bufio"
+    "io"
     "os"
     "fmt"
     "math/rand"
@@ -14,6 +15,24 @@ import (
 /*
 		NEW INFINIBAND METHOD
 */
+func ConfCreate(sFlag string) string {
+    var confPath string
+    switch {
+    case sFlag == "bdw":
+        confPath = "./params-bdw.conf"
+	conf, err := os.Create(confPath)
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer conf.Close()
+        _, err2 := conf.WriteString("SERVER=ib_write_bw  -s 65536 --report_gbits\nCLIENT=ib_write_bw  -s 65536 --report_gbits\n")
+        if err2 != nil {
+            log.Fatal(err2)
+        }
+    }
+    return confPath
+}
+
 
 //ReadLine To Slice
 func ReadLines(path string) ([]string, error) {
@@ -80,4 +99,40 @@ func DeleteFile(path string) {
     if IsError(err) {
         return
     }
+}
+
+//Parser
+func ParseOutput(file string) {
+    out_file, err := os.Open(file)
+    defer out_file.Close()
+    
+    if err != nil {
+        log.Fatal(err)
+    }
+    outReader := bufio.NewReader(out_file)
+    log.Info("Parsing.................")
+    //lineparseloop:
+    for {
+        var buffer bytes.Buffer
+        var l []byte
+        var isPrefix bool
+        for {
+            l, isPrefix, err = outReader.ReadLine()
+            buffer.Write(l)
+            // If we've reached the end of the line, stop reading.
+            if !isPrefix {
+                break
+            }
+            // If we're just at the EOF, break
+            if err != nil {
+                break
+            }
+        }
+        if err == io.EOF {
+            log.Info("EOF Reached")
+            break 
+        }
+        line := buffer.String()
+	fmt.Println(line)
+    }	
 }

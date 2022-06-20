@@ -16,11 +16,13 @@ func main() {
     var dFlag bool
     var pFlag string
     var cFlag bool
+    var sFlag string
     
     //Flag Assignment
     flag.BoolVar(&dFlag, "d", false, "DEBUG MODE")
     flag.StringVar(&pFlag, "p", "./hosts.list", "Host list to test")
     flag.BoolVar(&cFlag, "c", false, "Clean All")
+    flag.StringVar(&sFlag, "s", "bdw", "Test selection, accepted value: lat - latr - iperf - ipoIB. Default value bdw")
 
     flag.Parse()
     
@@ -42,7 +44,7 @@ func main() {
 
     //Clean Folder
     if cFlag {
-        files, err := filepath.Glob("./Bandwith*")
+        files, err := filepath.Glob("./[Bb]andwith*")
         if err != nil {
             log.Panic(err)
         }
@@ -64,7 +66,13 @@ func main() {
     shuffled := method.ShuffleSlice(lines)
     method.WriteLines(shuffled, "./hosts.shuffled")
 
-    err, out, errout := method.Shellout("cat ./hosts.shuffled")
+    //Conf File Creation
+    confPath := method.ConfCreate(sFlag)
+
+    //Launch Bench Command
+    //
+    //
+    err, out, errout := method.Shellout("cat ./bdw.log")
     if err != nil {
         log.Printf("error: %v", err)
         log.Error(errout)
@@ -73,5 +81,18 @@ func main() {
          fmt.Println("Ops, something went wrong, check logs.txt for Info")
     }
     fmt.Println(out)
+    out_file, err := os.OpenFile("./bandwith " + begin.Format(time.RFC850) + ".out", os.O_CREATE|os.O_WRONLY, 0666)
+    _, err2 := out_file.WriteString(out)
+    if err2 != nil {
+        log.Fatal(err2)
+    }
+
+    //Parse output
+    method.ParseOutput(out_file.Name())
+    
+
+    //Cleaning conf file
+    method.DeleteFile(confPath)
+    method.DeleteFile("./hosts.shuffled")
 }
 
