@@ -8,9 +8,14 @@ import (
     "infiniband_test/method"
     "path/filepath"
     log "github.com/sirupsen/logrus"
+    _ "embed"
 )
 
+//go:embed pairs_not_random_ib_test_1.4
+var f []byte 
+
 func main() {
+    
     
     //Flag Declare
     var pFlag string
@@ -40,6 +45,8 @@ func main() {
         }
     os.Exit(0)
     }
+
+    _ = os.WriteFile("./pairs_not_random_ib_test_1.4", f, 0755)
 
     //Read File
     lines, err := method.ReadLines(pFlag)
@@ -80,5 +87,6 @@ func main() {
     //Cleaning conf file
     method.DeleteFile(confPath)
     method.DeleteFile("./hosts.shuffled")
+    method.DeleteFile("./pairs_not_random_ib_test_1.4")
 }
 
