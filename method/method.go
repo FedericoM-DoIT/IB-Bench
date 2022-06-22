@@ -109,7 +109,8 @@ func DeleteFile(path string) {
 func ParseOutput(file string) {
     out_file, err := os.Open(file)
     defer out_file.Close()
-    
+    begin := time.Now()
+    fault_file, err := os.OpenFile("./bandwith " + begin.Format(time.RFC850) + ".fault", os.O_CREATE|os.O_WRONLY, 0666)
     if err != nil {
         log.Fatal(err)
     }
@@ -142,19 +143,23 @@ func ParseOutput(file string) {
 	    lineField := strings.Fields(line)
 	    peakValue, err := strconv.ParseFloat(lineField[5], 64)
 	    if err != nil {
-		log.Error(err)    
+		log.Error(err)
+		fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
                 continue lineparseloop
             }
 	    averageValue, err := strconv.ParseFloat(lineField[6], 64)
 	    if err != nil {
                 log.Error(err)
+		fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
 		continue lineparseloop
             }
 	    if (peakValue >= 70) && (peakValue <= 90) || (averageValue >= 70) && (averageValue <= 90) {
 	        color.Yellow(line)
+		fault_file.WriteString("Warning: " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
 	    }	 
             if (peakValue < 70) || (averageValue < 70) {
 		color.Red(line)
+		fault_file.WriteString("Error:   " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
 	    }
 
 	}

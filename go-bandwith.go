@@ -57,7 +57,7 @@ func main() {
     //Launch Bench Command
     //
     //
-    err, out, errout := method.Shellout("cat ./bdw.log")
+    err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts.shuffled --param params-bdw.conf -v -np -st 8 -P 200  --filter '65536'  --reverse")
     if err != nil {
         log.Printf("error: %v", err)
         log.Error(errout)
@@ -73,7 +73,9 @@ func main() {
 
     //Parse output
     method.ParseOutput(out_file.Name())
-    
+    fmt.Println("\n*************************************")
+    fmt.Println("\nCheck complete, refer to .out for complete output. Fault node will be listed in .fault")
+    fmt.Println("\n*************************************")
 
     //Cleaning conf file
     method.DeleteFile(confPath)

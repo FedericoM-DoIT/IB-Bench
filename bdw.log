@@ -28,3 +28,7 @@ t21node095 - t21node092:  #bytes     #[01;31m[Kiterations[m[K    BW peak[Gb/
 t21node095 - t21node092:  [01;31m[K65536[m[K      5000             75.75              96.75  		   0.184527
 t21node095 - t21node092:  #bytes     #[01;31m[Kiterations[m[K    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
 t21node095 - t21node092:  [01;31m[K65536[m[K      5000             96.75              75.75  		   0.184527
+t21node092 - t21node095:  #bytes     #[01;31m[Kiterations[m[K    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
+t21node092 - t21node095:  [01;31m[K65536[m[K      5000             ddf3£              67.76  		   0.184525
+t21node092 - t21node095:  #bytes     #[01;31m[Kiterations[m[K    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
+t21node092 - t21node095:  [01;31m[K65536[m[K      5000             11.45              sdf3£  		   0.184525
