@@ -10,6 +10,10 @@ import (
     "bytes"
     "os/exec"
     log "github.com/sirupsen/logrus"
+    "regexp"
+    "strings"
+    "strconv"
+    "github.com/fatih/color"
 )
 
 /*
@@ -110,8 +114,7 @@ func ParseOutput(file string) {
         log.Fatal(err)
     }
     outReader := bufio.NewReader(out_file)
-    log.Info("Parsing.................")
-    //lineparseloop:
+    lineparseloop:
     for {
         var buffer bytes.Buffer
         var l []byte
@@ -129,10 +132,31 @@ func ParseOutput(file string) {
             }
         }
         if err == io.EOF {
-            log.Info("EOF Reached")
             break 
         }
         line := buffer.String()
-	fmt.Println(line)
+	iterationsFlag := "5000"
+	matchIterFlag,_ := regexp.MatchString(iterationsFlag, line)
+         
+        if matchIterFlag {
+	    lineField := strings.Fields(line)
+	    peakValue, err := strconv.ParseFloat(lineField[5], 64)
+	    if err != nil {
+		log.Error(err)    
+                continue lineparseloop
+            }
+	    averageValue, err := strconv.ParseFloat(lineField[6], 64)
+	    if err != nil {
+                log.Error(err)
+		continue lineparseloop
+            }
+	    if (peakValue >= 70) && (peakValue <= 90) || (averageValue >= 70) && (averageValue <= 90) {
+	        color.Yellow(line)
+	    }	 
+            if (peakValue < 70) || (averageValue < 70) {
+		color.Red(line)
+	    }
+
+	}
     }	
 }

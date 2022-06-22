@@ -2,45 +2,30 @@ package main
 
 import (
     "fmt"
-    log "github.com/sirupsen/logrus"
     "os"
     "time"
     "flag"
     "infiniband_test/method"
     "path/filepath"
+    log "github.com/sirupsen/logrus"
 )
 
 func main() {
     
     //Flag Declare
-    var dFlag bool
     var pFlag string
     var cFlag bool
     var sFlag string
     
     //Flag Assignment
-    flag.BoolVar(&dFlag, "d", false, "DEBUG MODE")
     flag.StringVar(&pFlag, "p", "./hosts.list", "Host list to test")
     flag.BoolVar(&cFlag, "c", false, "Clean All")
     flag.StringVar(&sFlag, "s", "bdw", "Test selection, accepted value: lat - latr - iperf - ipoIB. Default value bdw")
 
     flag.Parse()
-    
     //Log File...............................................
     begin := time.Now()
-    if dFlag {
-        log.SetLevel(log.DebugLevel)
-        fmt.Println("Debug Level active, see logs.txt for details")
-    } else {
-        log.SetLevel(log.ErrorLevel)
-    }
 
-    log_file, err := os.OpenFile("./Bandwith " + begin.Format(time.RFC850) + ".log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-    if err != nil {
-        log.Fatal(err)
-    }
-    log.SetOutput(log_file)
-    log.Info("BEGIN")
 
     //Clean Folder
     if cFlag {
@@ -80,7 +65,6 @@ func main() {
     if len(errout) != 0 {
          fmt.Println("Ops, something went wrong, check logs.txt for Info")
     }
-    fmt.Println(out)
     out_file, err := os.OpenFile("./bandwith " + begin.Format(time.RFC850) + ".out", os.O_CREATE|os.O_WRONLY, 0666)
     _, err2 := out_file.WriteString(out)
     if err2 != nil {
