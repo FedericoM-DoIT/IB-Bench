@@ -28,7 +28,8 @@ func main() {
     flag.StringVar(&sFlag, "s", "bdw", "Test selection, accepted value: <bdw> - <lat>.")
     
     flag.Usage = func() {
-    fmt.Fprintf(os.Stderr, "Usage:    IB-Bench  [OPTION].\nIf not prompted -p or -s took Default VALUE\n")
+    fmt.Fprintf(os.Stderr, "Infiniband Benchmark Tool.\n\nAuthor(s): Federico Mollo federico.mollo@doit-systems.it\n\nIB-Bench version 1.0.1\n\nIB-Bench comes with ABSOLUTELY NO WARRANTY.  This is free software, and you\nare welcome to redistribute it under certain conditions.  See the GNU\nGeneral Public Licence for details.\n\nIB-Bench is a performance testing tool.\n\n")
+    fmt.Fprintf(os.Stderr, "Usage:    IB-Bench  [OPTION].\nIf not prompted -p or -s took Default VALUE\n\n")
     flag.PrintDefaults()
     }
      
