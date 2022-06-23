@@ -11,7 +11,7 @@ import (
     _ "embed"
 )
 
-//go:embed pairs_not_random_ib_test_1.4
+//go:embed extbin/pairs_not_random_ib_test_1.4
 var f []byte 
 
 func main() {
@@ -70,7 +70,7 @@ func main() {
     var out_file *os.File
     switch sFlag { 
     case "lat":
-        err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts-ib --param params-lat.conf -v -np -st 3 -P 200  --filter 'iterations|2       1000' --reverse")
+        err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts.shuffled --param params-lat.conf -v -np -st 3 -P 200  --filter 'iterations|2       1000' --reverse")
         if err != nil {
             log.Printf("error: %v", err)
             log.Error(errout)
@@ -84,7 +84,7 @@ func main() {
             log.Fatal(err2)
         }
     case "bdw":
-	    err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts.shuffled --param params-bdw.conf -v -np -st 8 -P 200  --filter '65536'  --reverse")
+	    err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts.shuffled --param params-bdw.conf -v -np -st 8 -P 200  --filter 'iterations|65536'  --reverse")
         if err != nil {
             log.Printf("error: %v", err)
             log.Error(errout)
@@ -98,8 +98,13 @@ func main() {
             log.Fatal(err2)
         }
     }    
-        //Parse output
-        method.ParseOutput(out_file.Name(), sFlag)
+    
+    fmt.Println("\n*******************************************************")
+    fmt.Println("\n               Printing Critical Value                 ")
+    fmt.Println("\n*******************************************************")
+    
+    //Parse output
+    method.ParseOutput(out_file.Name(), sFlag)
     
     
     fmt.Println("\n*************************************")
@@ -109,6 +114,6 @@ func main() {
     //Cleaning conf file
     method.DeleteFile(confPath)
     method.DeleteFile("./hosts.shuffled")
-    //method.DeleteFile("./pairs_not_random_ib_test_1.4")
+    method.DeleteFile("./pairs_not_random_ib_test_1.4")
 }
 
