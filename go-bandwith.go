@@ -87,6 +87,6 @@ func main() {
     //Cleaning conf file
     method.DeleteFile(confPath)
     method.DeleteFile("./hosts.shuffled")
-    method.DeleteFile("./pairs_not_random_ib_test_1.4")
+    //method.DeleteFile("./pairs_not_random_ib_test_1.4")
 }
 
