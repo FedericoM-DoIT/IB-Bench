@@ -23,10 +23,15 @@ func main() {
     var sFlag string
     
     //Flag Assignment
-    flag.StringVar(&pFlag, "p", "./hosts.list", "Host list to test")
-    flag.BoolVar(&cFlag, "c", false, "Clean All")
-    flag.StringVar(&sFlag, "s", "bdw", "Test selection, accepted value: lat - latr - iperf - ipoIB. Default value bdw")
-
+    flag.StringVar(&pFlag, "p", "./hosts.list", "Host list to test.")
+    flag.BoolVar(&cFlag, "c", false, "Clean all bandiwith* latency* file.")
+    flag.StringVar(&sFlag, "s", "bdw", "Test selection, accepted value: <bdw> - <lat>.")
+    
+    flag.Usage = func() {
+    fmt.Fprintf(os.Stderr, "Usage:    IB-Bench  [OPTION].\nIf not prompted -p or -s took Default VALUE\n")
+    flag.PrintDefaults()
+    }
+     
     flag.Parse()
     //Log File...............................................
     begin := time.Now()
