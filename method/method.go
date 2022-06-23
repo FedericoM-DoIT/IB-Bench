@@ -33,6 +33,28 @@ func ConfCreate(sFlag string) string {
         if err2 != nil {
             log.Fatal(err2)
         }
+    case sFlag == "lat":
+        confPath = "./params-lat.conf"
+        conf, err := os.Create(confPath)
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer conf.Close()
+        _, err2 := conf.WriteString("SERVER=ib_send_lat\nCLIENT=ib_send_lat\n")
+        if err2 != nil {
+            log.Fatal(err2)
+        }
+    case sFlag == "ipoIB":
+        confPath = "./params-ipoIB.conf"
+        conf, err := os.Create(confPath)
+        if err != nil {
+            log.Fatal(err)
+        }
+        defer conf.Close()
+        _, err2 := conf.WriteString("SERVER=iperf3 -s -1\nCLIENT=sleep 1 ; iperf3 -c\n")
+        if err2 != nil {
+            log.Fatal(err2)
+        }
     }
     return confPath
 }
@@ -106,11 +128,19 @@ func DeleteFile(path string) {
 }
 
 //Parser
-func ParseOutput(file string) {
+func ParseOutput(file string, sFlag string) {
     out_file, err := os.Open(file)
     defer out_file.Close()
     begin := time.Now()
-    fault_file, err := os.OpenFile("./bandwith " + begin.Format(time.RFC850) + ".fault", os.O_CREATE|os.O_WRONLY, 0666)
+    var iterationsFlag string
+
+    if (sFlag == "bdw") {
+	iterationsFlag = "5000"
+    }
+    if (sFlag == "lat") {
+	iterationsFlag = "1000"
+    }	    
+    
     if err != nil {
         log.Fatal(err)
     }
@@ -136,32 +166,58 @@ func ParseOutput(file string) {
             break 
         }
         line := buffer.String()
-	iterationsFlag := "5000"
+	
 	matchIterFlag,_ := regexp.MatchString(iterationsFlag, line)
          
         if matchIterFlag {
-	    lineField := strings.Fields(line)
-	    peakValue, err := strconv.ParseFloat(lineField[5], 64)
-	    if err != nil {
-		log.Error(err)
-		fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
-                continue lineparseloop
-            }
-	    averageValue, err := strconv.ParseFloat(lineField[6], 64)
-	    if err != nil {
-                log.Error(err)
-		fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
-		continue lineparseloop
-            }
-	    if (peakValue >= 70) && (peakValue <= 90) || (averageValue >= 70) && (averageValue <= 90) {
-	        color.Yellow(line)
-		fault_file.WriteString("Warning: " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
-	    }	 
-            if (peakValue < 70) || (averageValue < 70) {
-		color.Red(line)
-		fault_file.WriteString("Error:   " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
+	    switch sFlag {
+	    case "bdw":
+	        fault_file, err := os.OpenFile("./bandwith_" + begin.Format(time.RFC850) + ".fault", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	        lineField := strings.Fields(line)
+	        peakValue, err := strconv.ParseFloat(lineField[5], 64)
+	        if err != nil {
+		    log.Error(err)
+		    fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
+                    continue lineparseloop
+                }
+	        averageValue, err := strconv.ParseFloat(lineField[6], 64)
+	        if err != nil {
+                    log.Error(err)
+		    fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
+		    continue lineparseloop
+                }
+	        if (peakValue >= 70) && (peakValue <= 90) || (averageValue >= 70) && (averageValue <= 90) {
+	            color.Yellow(line)
+		    fault_file.WriteString("Warning: " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
+	        }	 
+                if (peakValue < 70) || (averageValue < 70) {
+		    color.Red(line)
+		    fault_file.WriteString("Error:   " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
+	        }
+	    case "lat":
+                fault_file, err := os.OpenFile("./latency_" + begin.Format(time.RFC850) + ".fault", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	        lineField := strings.Fields(line)
+                t_min, err := strconv.ParseFloat(lineField[5], 64)
+                if err != nil {
+                    log.Error(err)
+                    fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
+                    continue lineparseloop
+                }
+                t_avg, err := strconv.ParseFloat(lineField[8], 64)
+                if err != nil {
+                    log.Error(err)
+                    fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
+                    continue lineparseloop
+                }
+                if (t_min >= 1.2) && (t_min <= 1.5) || (t_avg >= 1.2) && (t_avg <= 1.5) {
+                    color.Yellow(line)
+                    fault_file.WriteString("Warning: " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    t_min[usec]: " + lineField[5] + "    -    t_avg[usec]: " + lineField[8] + "\n")
+                }
+                if (t_min > 1.5) || (t_avg > 1.5) {
+                    color.Red(line)
+                    fault_file.WriteString("Error:   " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    t_min[usec]: " + lineField[5] + "    -    t_avg[usec]: " + lineField[8] + "\n")
+                }
 	    }
-
 	}
     }	
 }

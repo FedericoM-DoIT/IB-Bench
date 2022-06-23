@@ -1,0 +1,25 @@
+ - Reading Parameters from file: params-lat.conf
+Test Parameters:
+Server    = ib_send_lat
+Client    = ib_send_lat
+ - Reading Devices from file: hosts-ib
+About to run the following commands:
+Server : ib_send_lat
+Client : ib_send_lat <Server>
+
+
+On the following nodes:
+1. t21node092
+2. t21node020
+3. t21node094
+4. t21node095
+
+t21node092 - t21node020:  #bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]
+t21node092 - t21node020:  2       1000          1.22           2.84         1.26               1.27             0.05            1.41                    2.84
+t21node094 - t21node095:  #bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]
+t21node094 - t21node095:  2       1000          0.90           5.65         0.94               0.95             0.09            1.08                    5.65
+t21node020 - t21node092:  #bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]
+t21node020 - t21node092:  2       1000          1.23           2.62         1.26               1.27             0.05            1.40                    2.62
+t21node095 - t21node094:  #bytes #iterations    t_min[usec]    t_max[usec]  t_typical[usec]    t_avg[usec]    t_stdev[usec]   99% percentile[usec]   99.9% percentile[usec]
+t21node095 - t21node094:  2       1000          1.04           8.14         1.13               1.14             0.26            1.26                    8.14
+

@@ -34,11 +34,14 @@ func main() {
 
     //Clean Folder
     if cFlag {
-        files, err := filepath.Glob("./[Bb]andwith*")
-        if err != nil {
-            log.Panic(err)
-        }
-        for _, f := range files {
+        bandFile, _ := filepath.Glob("./bandwith*")
+        latFile, _ := filepath.Glob("./latency*")
+        for _, f := range bandFile {
+            if err := os.Remove(f); err != nil {
+                log.Panic(err)
+            }
+	}
+        for _, f := range latFile {
             if err := os.Remove(f); err != nil {
                 log.Panic(err)
             }
@@ -64,27 +67,41 @@ func main() {
     //Launch Bench Command
     //
     //
+    var out_file *os.File
     switch sFlag { 
     case "lat":
-    fmt.Println("test1")
+        err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts-ib --param params-lat.conf -v -np -st 3 -P 200  --filter 'iterations|2       1000' --reverse")
+        if err != nil {
+            log.Printf("error: %v", err)
+            log.Error(errout)
+        }
+        if len(errout) != 0 {
+             fmt.Println("Ops, something went wrong, check logs.txt for Info")
+        }
+        out_file, err = os.OpenFile("./latency_" + begin.Format(time.RFC850) + ".out", os.O_CREATE|os.O_WRONLY, 0666)
+        _, err2 := out_file.WriteString(out)
+        if err2 != nil {
+            log.Fatal(err2)
+        }
     case "bdw":
-    err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts.shuffled --param params-bdw.conf -v -np -st 8 -P 200  --filter '65536'  --reverse")
-    if err != nil {
-        log.Printf("error: %v", err)
-        log.Error(errout)
-    }
-    if len(errout) != 0 {
-         fmt.Println("Ops, something went wrong, check logs.txt for Info")
-    }
-    out_file, err := os.OpenFile("./bandwith " + begin.Format(time.RFC850) + ".out", os.O_CREATE|os.O_WRONLY, 0666)
-    _, err2 := out_file.WriteString(out)
-    if err2 != nil {
-        log.Fatal(err2)
-    }
-
-    //Parse output
-    method.ParseOutput(out_file.Name())
-    }
+	    err, out, errout := method.Shellout("./pairs_not_random_ib_test_1.4  -l hosts.shuffled --param params-bdw.conf -v -np -st 8 -P 200  --filter '65536'  --reverse")
+        if err != nil {
+            log.Printf("error: %v", err)
+            log.Error(errout)
+        }
+        if len(errout) != 0 {
+             fmt.Println("Ops, something went wrong, check logs.txt for Info")
+        }
+        out_file, err = os.OpenFile("./bandwith_" + begin.Format(time.RFC850) + ".out", os.O_CREATE|os.O_WRONLY, 0666)
+        _, err2 := out_file.WriteString(out)
+        if err2 != nil {
+            log.Fatal(err2)
+        }
+    }    
+        //Parse output
+        method.ParseOutput(out_file.Name(), sFlag)
+    
+    
     fmt.Println("\n*************************************")
     fmt.Println("\nCheck complete, refer to .out for complete output. Fault node will be listed in .fault")
     fmt.Println("\n*************************************")
