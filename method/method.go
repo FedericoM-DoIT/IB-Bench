@@ -128,7 +128,9 @@ func DeleteFile(path string) {
 }
 
 //Parser
-func ParseOutput(file string, sFlag string) {
+func ParseOutput(file string, sFlag string, greenFlag string, yellowFlag string) {
+    minFlag, err := strconv.ParseFloat(yellowFlag, 64)
+    maxFlag, err := strconv.ParseFloat(greenFlag, 64)
     out_file, err := os.Open(file)
     defer out_file.Close()
     begin := time.Now()
@@ -186,11 +188,11 @@ func ParseOutput(file string, sFlag string) {
 		    fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
 		    continue lineparseloop
                 }
-	        if (peakValue >= 70) && (peakValue <= 90) || (averageValue >= 70) && (averageValue <= 90) {
+	        if (peakValue >= minFlag) && (peakValue <= maxFlag) || (averageValue >= minFlag) && (averageValue <= maxFlag) {
 	            color.Yellow(line)
 		    fault_file.WriteString("Warning: " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
 	        }	 
-                if (peakValue < 70) || (averageValue < 70) {
+                if (peakValue < minFlag) || (averageValue < minFlag) {
 		    color.Red(line)
 		    fault_file.WriteString("Error:   " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    BW_peak[Gb/sec]: " + lineField[5] + "    -    BW_average[Gb/sec]: " + lineField[6] + "\n")
 	        }
@@ -209,11 +211,11 @@ func ParseOutput(file string, sFlag string) {
                     fmt.Println("Something wrong with: " + lineField[0] + lineField[1] + lineField[2] + " interaction")
                     continue lineparseloop
                 }
-                if (t_min >= 1.2) && (t_min <= 1.5) || (t_avg >= 1.2) && (t_avg <= 1.5) {
+                if (t_min >= minFlag) && (t_min <= maxFlag) || (t_avg >= minFlag) && (t_avg <= maxFlag) {
                     color.Yellow(line)
                     fault_file.WriteString("Warning: " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    t_min[usec]: " + lineField[5] + "    -    t_avg[usec]: " + lineField[8] + "\n")
                 }
-                if (t_min > 1.5) || (t_avg > 1.5) {
+                if (t_min > maxFlag) || (t_avg > maxFlag) {
                     color.Red(line)
                     fault_file.WriteString("Error:   " + lineField[0] + " " + lineField[1]+ " " + lineField[2] + "    t_min[usec]: " + lineField[5] + "    -    t_avg[usec]: " + lineField[8] + "\n")
                 }

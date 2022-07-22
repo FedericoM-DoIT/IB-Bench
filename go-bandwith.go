@@ -21,12 +21,17 @@ func main() {
     var pFlag string
     var cFlag bool
     var sFlag string
+    var greenFlag string
+    var yellowFlag string
     
     //Flag Assignment
     flag.StringVar(&pFlag, "p", "./hosts.list", "Host list to test.")
     flag.BoolVar(&cFlag, "c", false, "Clean all bandiwith* latency* file.")
     flag.StringVar(&sFlag, "s", "bdw", "Test selection, accepted value: <bdw> - <lat>.")
-    
+    flag.StringVar(&greenFlag, "max", "90", "Max Valor for Output") 
+    flag.StringVar(&yellowFlag, "min", "70", "Min Valor for Output") 
+
+
     flag.Usage = func() {
     fmt.Fprintf(os.Stderr, "Infiniband Benchmark Tool.\n\nAuthor(s): Federico Mollo federico.mollo@doit-systems.it\n\nIB-Bench version 1.0.1\n\nIB-Bench comes with ABSOLUTELY NO WARRANTY.  This is free software, and you\nare welcome to redistribute it under certain conditions.  See the GNU\nGeneral Public Licence for details.\n\nIB-Bench is a performance testing tool.\n\n")
     fmt.Fprintf(os.Stderr, "Usage:    IB-Bench  [OPTION].\nIf not prompted -p or -s took Default VALUE\n\n")
@@ -110,7 +115,7 @@ func main() {
     fmt.Println("\n*******************************************************")
     
     //Parse output
-    method.ParseOutput(out_file.Name(), sFlag)
+    method.ParseOutput(out_file.Name(), sFlag, greenFlag, yellowFlag)
     
     
     fmt.Println("\n*************************************")
